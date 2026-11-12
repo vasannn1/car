@@ -46,9 +46,10 @@ export default async function Setup({ searchParams }: SetupPageProps) {
               already finished.
             </div>
           )}
-          {!process.env.SETUP_TOKEN && (
+          {(!process.env.SETUP_TOKEN || process.env.SETUP_TOKEN.length < 32) && (
             <div className="feedback feedback-error" role="alert">
-              Setup is locked until a private setup key is configured in the server environment.
+              Setup is locked until a private key of at least 32 characters is configured on the
+              server.
             </div>
           )}
           <form className="auth-form" action={setupOrganization}>
@@ -89,7 +90,7 @@ export default async function Setup({ searchParams }: SetupPageProps) {
             <SubmitButton
               className="button button-primary auth-submit"
               pendingLabel="Creating workspace…"
-              disabled={!process.env.SETUP_TOKEN}
+              disabled={!process.env.SETUP_TOKEN || process.env.SETUP_TOKEN.length < 32}
             >
               Create workspace <span aria-hidden="true">→</span>
             </SubmitButton>

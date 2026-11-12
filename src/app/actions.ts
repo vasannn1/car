@@ -25,7 +25,7 @@ const setupSchema = z.object({
   name: z.string().trim().min(2).max(80),
   email: z.email().transform((value) => value.toLowerCase()),
   password: z.string().min(12).max(128),
-  setupToken: z.string().min(1),
+  setupToken: z.string().min(32).max(256),
 });
 const orderSchema = z.object({
   siteId: z.uuid(),
@@ -45,7 +45,9 @@ function formValues(formData: FormData) {
 
 export async function setupOrganization(formData: FormData) {
   const parsed = setupSchema.safeParse(formValues(formData));
-  if (!parsed.success || !process.env.SETUP_TOKEN) redirect('/setup?error=invalid');
+  if (!parsed.success || !process.env.SETUP_TOKEN || process.env.SETUP_TOKEN.length < 32) {
+    redirect('/setup?error=invalid');
+  }
   const input = parsed.data;
   if (input.setupToken !== process.env.SETUP_TOKEN) redirect('/setup?error=invalid');
 
